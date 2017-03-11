@@ -214,6 +214,41 @@ func TestListPools(t *testing.T) {
 	// assert.Equal(t, applications[1], fakeAppNameBroken)
 }
 
+func TestPool(t *testing.T) {
+	config := NewDefaultConfig()
+	config.URL = "https://192.168.99.100:9070"
+	config.HTTPClient = &http.Client{
+		Timeout: (time.Duration(1) * time.Second),
+		Transport: &http.Transport{
+			Dial: (&net.Dialer{
+				Timeout:   500 * time.Millisecond,
+				KeepAlive: 10 * time.Second,
+			}).Dial,
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
+	}
+	config.HTTPBasicAuthUser = "admin"
+	config.HTTPBasicPassword = "bob"
+
+	client, err := NewClient(config)
+	assert.NoError(t, err)
+
+	pool, err := client.Pool("foo-ob_cas_client-bar")
+	assert.NoError(t, err)
+
+	// endpoint := newFakeMarathonEndpoint(t, nil)
+	// defer endpoint.Close()
+
+	// applications, err := endpoint.Client.ListPools()
+	// assert.NoError(t, err)
+	assert.NotNil(t, pool)
+	// assert.Equal(t, len(applications), 2)
+	// assert.Equal(t, applications[0], fakeAppName)
+	// assert.Equal(t, applications[1], fakeAppNameBroken)
+}
+
 // func TestApplicationVersions(t *testing.T) {
 // 	endpoint := newFakeMarathonEndpoint(t, nil)
 // 	defer endpoint.Close()

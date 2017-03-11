@@ -5,32 +5,75 @@ import (
 	"fmt"
 )
 
-// Pools is a collection of pools
-type Pools struct {
-	Pools []Pool `json:"children"`
-}
-
-type Pool struct {
+type PoolInfo struct {
 	Name string `json:"name"`
 	Href string `json:"href"`
 }
 
+type SSL struct {
+	ClientAuth bool `json:"client_auth"`
+	// "common_name_match": [ ],
+	// "elliptic_curves": [ ],
+	Enable               bool   `json:"enable"`
+	Enhance              bool   `json:"enhance"`
+	SendCloseAlerts      bool   `json:"send_close_alerts"`
+	ServerName           bool   `json:"server_name"`
+	Signature_algorithms string `json:"signature_algorithms"`
+	Ssl_ciphers          string `json:"ssl_ciphers"`
+	Ssl_support_ssl2     string `json:"ssl_support_ssl2"`
+	Ssl_support_ssl3     string `json:"ssl_support_ssl3"`
+	Ssl_support_tls1     string `json:"ssl_support_tls1"`
+	Ssl_support_tls1_1   string `json:"ssl_support_tls1_1"`
+	Ssl_support_tls1_2   string `json:"ssl_support_tls1_2"`
+	StrictVerify         bool   `json:"strict_verify"`
+}
+
+type TCP struct {
+	Nagle bool `json:"nagle"`
+}
+
+type UDP struct {
+	AcceptFrom     string `json:"accept_from"`
+	AcceptFromMask string `json:"accept_from_mask"`
+}
+
+type Pool struct {
+	SSL *SSL `json:"ssl"`
+	TCP *TCP `json:"tcp"`
+	UDP *UDP `json:"udp"`
+}
+
 // ListPools retrieves an array of the pool names currently registered in stingray
 func (r *marathonClient) ListPools() ([]string, error) {
-	pools := new(Pools)
-	err := r.apiGet(marathonAPIPools, nil, pools)
-	if err != nil {
+	var wrapper struct {
+		Pools []PoolInfo `json:"children"`
+	}
+	if err := r.apiGet(marathonAPIPools, nil, &wrapper); err != nil {
 		return nil, err
 	}
 
-	fmt.Println(pools)
-
 	var list []string
-	for _, pool := range pools.Pools {
+	for _, pool := range wrapper.Pools {
 		list = append(list, pool.Name)
 	}
 
+	fmt.Println(list)
 	return list, nil
+}
+
+// Application retrieves the application configuration from marathon
+// 		name: 		the id used to identify the application
+func (r *marathonClient) Pool(name string) (*Pool, error) {
+	var wrapper struct {
+		Pool *Pool `json:"properties"`
+	}
+
+	if err := r.apiGet(buildURI(name), nil, &wrapper); err != nil {
+		return nil, err
+	}
+
+	fmt.Printf("%v\n", wrapper.Pool.UDP)
+	return wrapper.Pool, nil
 }
 
 // Application is the definition for an application in marathon
@@ -80,20 +123,6 @@ func (r *marathonClient) ListPools() ([]string, error) {
 // 	return string(s)
 // }
 
-// Application retrieves the application configuration from marathon
-// 		name: 		the id used to identify the application
-// func (r *marathonClient) Application(name string) (*Application, error) {
-// 	var wrapper struct {
-// 		Application *Application `json:"app"`
-// 	}
-//
-// 	if err := r.apiGet(buildURI(name), nil, &wrapper); err != nil {
-// 		return nil, err
-// 	}
-//
-// 	return wrapper.Application, nil
-// }
-
 // CreateApplication creates a new application in Marathon
 // 		application:		the structure holding the application configuration
 // func (r *marathonClient) CreateApplication(application *Application) (*Application, error) {
@@ -130,6 +159,6 @@ func (r *marathonClient) ListPools() ([]string, error) {
 // 	return result, nil
 // }
 
-// func buildURI(path string) string {
-// 	return fmt.Sprintf("%s/%s", marathonAPIApps, trimRootPath(path))
-// }
+func buildURI(path string) string {
+	return fmt.Sprintf("%s/%s", marathonAPIPools, trimRootPath(path))
+}

@@ -17,13 +17,12 @@ import (
 type Marathon interface {
 	// -- POOLS ---
 	ListPools() ([]string, error)
+	Pool(string) (*Pool, error)
 }
 
 var (
 	// ErrInvalidResponse is thrown when marathon responds with invalid or error response
 	ErrInvalidResponse = errors.New("invalid response from Marathon")
-	// ErrMarathonDown is thrown when all the marathon endpoints are down
-	ErrMarathonDown = errors.New("all the Marathon hosts are presently down")
 	// ErrTimeoutError is thrown when the operation has timed out
 	ErrTimeoutError = errors.New("the operation has timed out")
 )
@@ -50,31 +49,25 @@ func NewClient(config Config) (Marathon, error) {
 		config.HTTPClient = http.DefaultClient
 	}
 
-	// step: if no polling wait time is set, default to 500 milliseconds.
-	if config.PollingWaitTime == 0 {
-		config.PollingWaitTime = defaultPollingWaitTime
-	}
-
 	debugLogOutput := config.LogOutput
 	if debugLogOutput == nil {
 		debugLogOutput = ioutil.Discard
 	}
 
 	return &marathonClient{
-		config: config,
-		// hosts:      []string,  // FIXME
+		config:     config,
 		httpClient: config.HTTPClient,
 		debugLog:   log.New(debugLogOutput, "", 0),
 	}, nil
 }
 
 // Ping pings the current marathon endpoint (note, this is not a ICMP ping, but a rest api call)
-func (r *marathonClient) Ping() (bool, error) {
-	if err := r.apiGet(marathonAPIPing, nil, nil); err != nil {
-		return false, err
-	}
-	return true, nil
-}
+// func (r *marathonClient) Ping() (bool, error) {
+// 	if err := r.apiGet(marathonAPIPing, nil, nil); err != nil {
+// 		return false, err
+// 	}
+// 	return true, nil
+// }
 
 func (r *marathonClient) apiGet(uri string, post, result interface{}) error {
 	return r.apiCall("GET", uri, post, result)
@@ -133,20 +126,10 @@ func (r *marathonClient) apiCall(method, url string, body, result interface{}) e
 				return ErrInvalidResponse
 			}
 		}
-		fmt.Printf("%v", result)
 		return nil
 	}
 
-	// step: if the member node returns a >= 500 && <= 599 we should try another node?
-	// if response.StatusCode >= 500 && response.StatusCode <= 599 {
-	// 	// step: mark the host as down
-	// 	r.hosts.markDown(member)
-	// 	r.debugLog.Printf("apiCall(): request failed, host: %s, status: %d, trying another\n", member, response.StatusCode)
-	// 	continue
-	// }
-
 	return NewAPIError(response.StatusCode, respBody)
-
 }
 
 // buildAPIRequest creates a default API request
@@ -163,10 +146,6 @@ func (r *marathonClient) buildAPIRequest(method, uri string, reader io.Reader) (
 	// Add any basic auth and the content headers
 	if r.config.HTTPBasicAuthUser != "" && r.config.HTTPBasicPassword != "" {
 		request.SetBasicAuth(r.config.HTTPBasicAuthUser, r.config.HTTPBasicPassword)
-	}
-
-	if r.config.DCOSToken != "" {
-		request.Header.Add("Authorization", "token="+r.config.DCOSToken)
 	}
 
 	request.Header.Add("Content-Type", "application/json")
