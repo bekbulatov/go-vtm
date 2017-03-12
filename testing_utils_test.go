@@ -7,20 +7,19 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"strings"
 	"sync"
 	"testing"
 
-	"github.com/donovanhide/eventsource"
 	yaml "gopkg.in/yaml.v2"
 )
 
 const (
+	fakePoolName = "foo"
+
 	fakeMarathonURL         = "http://127.0.0.1:3000,127.0.0.1:3000,127.0.0.1:3000"
 	fakeMarathonURLWithPath = "http://127.0.0.1:3000/path,127.0.0.1:3000/path,127.0.0.1:3000/path"
 	fakeGroupName           = "/test"
 	fakeGroupName1          = "/qa/product/1"
-	fakeAppName             = "/fake-app"
 	fakeTaskID              = "fake-app.fake-task"
 	fakeAppNameBroken       = "/fake-app-broken"
 	fakeDeploymentID        = "867ed450-f6a8-4d33-9b0e-e11c5513990b"
@@ -66,8 +65,6 @@ type serverConfig struct {
 	username string
 	// Password for basic auth
 	password string
-	// Token for authorization in case of DCOS environment
-	dcosToken string
 	// scope is an arbitrary test scope to distinguish fake responses from
 	// otherwise equal HTTP methods and query strings.
 	scope string
@@ -82,7 +79,6 @@ type configContainer struct {
 type fakeServer struct {
 	io.Closer
 
-	eventSrv        *eventsource.Server
 	httpSrv         *httptest.Server
 	fakeRespIndices *responseIndices
 }
@@ -95,24 +91,17 @@ type endpoint struct {
 	URL    string
 }
 
-type fakeEvent struct {
-	data string
-}
-
 func getTestURL(urlString string) string {
 	parsedURL, err := url.Parse(urlString)
 	if err != nil {
 		panic(fmt.Sprintf("failed to parse URL '%s': %s", urlString, err))
 	}
-	return fmt.Sprintf("%s://%s", parsedURL.Scheme, strings.Join([]string{parsedURL.Host, parsedURL.Host, parsedURL.Host}, ","))
+	return fmt.Sprintf("%s://%s", parsedURL.Scheme, parsedURL.Host)
 }
 
 func newFakeMarathonEndpoint(t *testing.T, configs *configContainer) *endpoint {
 	// step: read in the fake responses if required
 	initFakeMarathonResponses(t)
-
-	// step: create a fake SSE event service
-	eventSrv := eventsource.NewServer()
 
 	// step: fill in the default if required
 	defaultConfig := NewDefaultConfig()
@@ -130,9 +119,9 @@ func newFakeMarathonEndpoint(t *testing.T, configs *configContainer) *endpoint {
 
 	// step: create the HTTP router
 	mux := http.NewServeMux()
-	mux.HandleFunc("/v2/events", authMiddleware(configs.server, eventSrv.Handler("event")))
 	mux.HandleFunc("/", authMiddleware(configs.server, func(writer http.ResponseWriter, reader *http.Request) {
 		respKey := fakeResponseMapKey(reader.Method, reader.RequestURI, configs.server.scope)
+		fmt.Println(respKey)
 		fakeRespIndices.Lock()
 		fakeRespIndex := fakeRespIndices.m[respKey]
 		fakeRespIndices.m[respKey]++
@@ -167,7 +156,6 @@ func newFakeMarathonEndpoint(t *testing.T, configs *configContainer) *endpoint {
 
 	return &endpoint{
 		Server: fakeServer{
-			eventSrv:        eventSrv,
 			httpSrv:         httpSrv,
 			fakeRespIndices: fakeRespIndices,
 		},
@@ -207,21 +195,7 @@ func authMiddleware(server *serverConfig, next http.HandlerFunc) func(http.Respo
 	return func(w http.ResponseWriter, r *http.Request) {
 		// step: is authentication required?
 
-		if server.dcosToken != "" {
-			headerValue := r.Header.Get("Authorization")
-			// step: if no auth found, error it
-			if headerValue == "" {
-				http.Error(w, unauthorized, 401)
-				return
-			}
-
-			s := strings.Split(headerValue, "=")
-
-			if s[1] != server.dcosToken {
-				http.Error(w, unauthorized, 401)
-				return
-			}
-		} else if server.username != "" && server.password != "" {
+		if server.username != "" && server.password != "" {
 			u, p, found := r.BasicAuth()
 			// step: if no auth found, error it
 			if !found {
@@ -282,24 +256,7 @@ func fakeResponseMapKey(method, uri, scope string) string {
 	return fmt.Sprintf("%s:%s:%s", method, uri, scope)
 }
 
-func (t fakeEvent) Id() string {
-	return "0"
-}
-
-func (t fakeEvent) Event() string {
-	return "MarathonEvent"
-}
-
-func (t fakeEvent) Data() string {
-	return t.data
-}
-
-func (s *fakeServer) PublishEvent(event string) {
-	s.eventSrv.Publish([]string{"event"}, fakeEvent{event})
-}
-
 func (s *fakeServer) Close() error {
-	s.eventSrv.Close()
 	s.httpSrv.Close()
 	return nil
 }

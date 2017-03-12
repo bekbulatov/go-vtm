@@ -5,27 +5,114 @@ import (
 	"fmt"
 )
 
+type Basic struct {
+	BandwidthClass                string   `json:"bandwidth_class"`
+	FailurePool                   string   `json:"failure_pool"`
+	MaxConnectionAttempts         int      `json:"max_connection_attempts"`
+	MaxIdleConnectionsPernode     int      `json:"max_idle_connections_pernode"`
+	MaxTimedOutConnectionAttempts int      `json:"max_timed_out_connection_attempts"`
+	Monitors                      []string `json:"monitors"`
+	NodeCloseWithRst              bool     `json:"node_close_with_rst"`
+	NodeConnectionAttempts        int      `json:"node_connection_attempts"`
+	NodeDeleteBehavior            string   `json:"node_delete_behavior"`
+	NodeDrainToDeleteTimeout      int      `json:"node_drain_to_delete_timeout"`
+	NodesTable                    []struct {
+		Node     string `json:"node"`
+		Priority int    `json:"priority"`
+		State    string `json:"state"`
+		Weight   int    `json:"weight"`
+	} `json:"nodes_table"`
+	Note              string `json:"note"`
+	PassiveMonitoring bool   `json:"passive_monitoring"`
+	PersistenceClass  string `json:"persistence_class"`
+	Transparent       bool   `json:"transparent"`
+}
+
+type AutoScaling struct {
+	AddnodeDelaytime int           `json:"addnode_delaytime"`
+	CloudCredentials string        `json:"cloud_credentials"`
+	Cluster          string        `json:"cluster"`
+	DataCenter       string        `json:"data_center"`
+	DataStore        string        `json:"data_store"`
+	Enabled          bool          `json:"enabled"`
+	External         bool          `json:"external"`
+	Hysteresis       int           `json:"hysteresis"`
+	Imageid          string        `json:"imageid"`
+	IpsToUse         string        `json:"ips_to_use"`
+	LastNodeIdleTime int           `json:"last_node_idle_time"`
+	MaxNodes         int           `json:"max_nodes"`
+	MinNodes         int           `json:"min_nodes"`
+	Name             string        `json:"name"`
+	Port             int           `json:"port"`
+	Refractory       int           `json:"refractory"`
+	ResponseTime     int           `json:"response_time"`
+	ScaleDownLevel   int           `json:"scale_down_level"`
+	ScaleUpLevel     int           `json:"scale_up_level"`
+	Securitygroupids []interface{} `json:"securitygroupids"`
+	SizeID           string        `json:"size_id"`
+	Subnetids        []interface{} `json:"subnetids"`
+}
+
+type Connection struct {
+	MaxConnectTime        int `json:"max_connect_time"`
+	MaxConnectionsPerNode int `json:"max_connections_per_node"`
+	MaxQueueSize          int `json:"max_queue_size"`
+	MaxReplyTime          int `json:"max_reply_time"`
+	QueueTimeout          int `json:"queue_timeout"`
+}
+
+type DNSAutoscale struct {
+	Enabled   bool          `json:"enabled"`
+	Hostnames []interface{} `json:"hostnames"`
+	Port      int           `json:"port"`
+}
+type FTP struct {
+	SupportRfc2428 bool `json:"support_rfc_2428"`
+}
+type HTTP struct {
+	Keepalive              bool `json:"keepalive"`
+	KeepaliveNonIdempotent bool `json:"keepalive_non_idempotent"`
+}
+type KerberosProtocolTransition struct {
+	Principal string `json:"principal"`
+	Target    string `json:"target"`
+}
+type LoadBalancing struct {
+	Algorithm       string `json:"algorithm"`
+	PriorityEnabled bool   `json:"priority_enabled"`
+	PriorityNodes   int    `json:"priority_nodes"`
+}
+
+type Node struct {
+	CloseOnDeath  bool `json:"close_on_death"`
+	RetryFailTime int  `json:"retry_fail_time"`
+}
+
 type PoolInfo struct {
 	Name string `json:"name"`
 	Href string `json:"href"`
 }
 
+type SMTP struct {
+	SendStarttls bool `json:"send_starttls"`
+}
+
 type SSL struct {
-	ClientAuth bool `json:"client_auth"`
-	// "common_name_match": [ ],
-	// "elliptic_curves": [ ],
-	Enable               bool   `json:"enable"`
-	Enhance              bool   `json:"enhance"`
-	SendCloseAlerts      bool   `json:"send_close_alerts"`
-	ServerName           bool   `json:"server_name"`
-	Signature_algorithms string `json:"signature_algorithms"`
-	Ssl_ciphers          string `json:"ssl_ciphers"`
-	Ssl_support_ssl2     string `json:"ssl_support_ssl2"`
-	Ssl_support_ssl3     string `json:"ssl_support_ssl3"`
-	Ssl_support_tls1     string `json:"ssl_support_tls1"`
-	Ssl_support_tls1_1   string `json:"ssl_support_tls1_1"`
-	Ssl_support_tls1_2   string `json:"ssl_support_tls1_2"`
-	StrictVerify         bool   `json:"strict_verify"`
+	ClientAuth           bool          `json:"client_auth"`
+	CommonNameMatch      []interface{} `json:"common_name_match"`
+	EllipticCurves       []interface{} `json:"elliptic_curves"`
+	Enable               bool          `json:"enable"`
+	Enhance              bool          `json:"enhance"`
+	SendCloseAlerts      bool          `json:"send_close_alerts"`
+	ServerName           bool          `json:"server_name"`
+	Signature_algorithms string        `json:"signature_algorithms"`
+	Ssl_ciphers          string        `json:"ssl_ciphers"`
+	Ssl_support_ssl2     string        `json:"ssl_support_ssl2"`
+	Ssl_support_ssl3     string        `json:"ssl_support_ssl3"`
+	Ssl_support_tls1     string        `json:"ssl_support_tls1"`
+	Ssl_support_tls1_1   string        `json:"ssl_support_tls1_1"`
+	Ssl_support_tls1_2   string        `json:"ssl_support_tls1_2"`
+	StrictVerify         bool          `json:"strict_verify"`
 }
 
 type TCP struct {
@@ -37,10 +124,23 @@ type UDP struct {
 	AcceptFromMask string `json:"accept_from_mask"`
 }
 
+// Pool is the definition for a pool in stingray
 type Pool struct {
-	SSL *SSL `json:"ssl"`
-	TCP *TCP `json:"tcp"`
-	UDP *UDP `json:"udp"`
+	Basic *Basic `json:"basic"`
+
+	AutoScaling *AutoScaling `json:"auto_scaling"`
+
+	Connection                 *Connection                 `json:"connection"`
+	DNSAutoscale               *DNSAutoscale               `json:"dns_autoscale"`
+	FTP                        *FTP                        `json:"ftp"`
+	HTTP                       *HTTP                       `json:"http"`
+	KerberosProtocolTransition *KerberosProtocolTransition `json:"kerberos_protocol_transition"`
+	LoadBalancing              *LoadBalancing              `json:"load_balancing"`
+	Node                       *Node                       `json:"node"`
+	SMTP                       *SMTP                       `json:"smtp"`
+	SSL                        *SSL                        `json:"ssl"`
+	TCP                        *TCP                        `json:"tcp"`
+	UDP                        *UDP                        `json:"udp"`
 }
 
 // ListPools retrieves an array of the pool names currently registered in stingray
@@ -57,7 +157,6 @@ func (r *marathonClient) ListPools() ([]string, error) {
 		list = append(list, pool.Name)
 	}
 
-	fmt.Println(list)
 	return list, nil
 }
 
@@ -72,40 +171,8 @@ func (r *marathonClient) Pool(name string) (*Pool, error) {
 		return nil, err
 	}
 
-	fmt.Printf("%v\n", wrapper.Pool.UDP)
 	return wrapper.Pool, nil
 }
-
-// Application is the definition for an application in marathon
-// type Application struct {
-// 	ID                         string              `json:"id,omitempty"`
-// 	Cmd                        *string             `json:"cmd,omitempty"`
-// 	Args                       *[]string           `json:"args,omitempty"`
-// 	Constraints                *[][]string         `json:"constraints,omitempty"`
-// 	CPUs                       float64             `json:"cpus,omitempty"`
-// 	Disk                       *float64            `json:"disk,omitempty"`
-// 	Env                        *map[string]string  `json:"env,omitempty"`
-// 	Executor                   *string             `json:"executor,omitempty"`
-// 	Instances                  *int                `json:"instances,omitempty"`
-// 	Mem                        *float64            `json:"mem,omitempty"`
-// 	Ports                      []int               `json:"ports"`
-// 	RequirePorts               *bool               `json:"requirePorts,omitempty"`
-// 	BackoffSeconds             *float64            `json:"backoffSeconds,omitempty"`
-// 	BackoffFactor              *float64            `json:"backoffFactor,omitempty"`
-// 	MaxLaunchDelaySeconds      *float64            `json:"maxLaunchDelaySeconds,omitempty"`
-// 	TaskKillGracePeriodSeconds *float64            `json:"taskKillGracePeriodSeconds,omitempty"`
-// 	Deployments                []map[string]string `json:"deployments,omitempty"`
-// 	Dependencies               []string            `json:"dependencies"`
-// 	TasksRunning               int                 `json:"tasksRunning,omitempty"`
-// 	TasksStaged                int                 `json:"tasksStaged,omitempty"`
-// 	TasksHealthy               int                 `json:"tasksHealthy,omitempty"`
-// 	TasksUnhealthy             int                 `json:"tasksUnhealthy,omitempty"`
-// 	User                       string              `json:"user,omitempty"`
-// 	Uris                       *[]string           `json:"uris,omitempty"`
-// 	Version                    string              `json:"version,omitempty"`
-// 	Labels                     *map[string]string  `json:"labels,omitempty"`
-// 	AcceptedResourceRoles      []string            `json:"acceptedResourceRoles,omitempty"`
-// }
 
 // NewDockerApplication creates a default docker application
 // func NewDockerApplication() *Application {
