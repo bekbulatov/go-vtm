@@ -8,7 +8,7 @@ import (
 
 // Config holds the settings and options for the client
 type Config struct {
-	// URL is the url for stingray
+	// URL is the url for VTM
 	URL string
 	// HTTPBasicAuthUser is the http basic auth
 	HTTPBasicAuthUser string

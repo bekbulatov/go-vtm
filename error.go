@@ -66,8 +66,6 @@ func NewAPIError(code int, content []byte) error {
 		errDef = &simpleErrDef{code: ErrCodeForbidden}
 	case code == http.StatusNotFound:
 		errDef = &simpleErrDef{code: ErrCodeNotFound}
-	case code == http.StatusConflict:
-		errDef = &conflictDef{}
 	case code == 422:
 		errDef = &unprocessableEntityDef{}
 	case code >= http.StatusInternalServerError:
@@ -118,50 +116,24 @@ func (d detailDescription) String() string {
 }
 
 type badRequestDef struct {
-	Message string              `json:"message"`
-	Details []detailDescription `json:"details"`
+	Id      string `json:"error_id"`
+	Message string `json:"error_text"`
+	// TODO: parse `json:"error_info"`
+	// Details []detailDescription
 }
 
 func (def *badRequestDef) message() string {
-	var details []string
-	for _, detail := range def.Details {
-		details = append(details, detail.String())
-	}
+	// var details []string
+	// for _, detail := range def.Details {
+	// 	details = append(details, detail.String())
+	// }
 
-	return fmt.Sprintf("%s (%s)", def.Message, strings.Join(details, "; "))
+	// return fmt.Sprintf("%s (%s)", def.Message, strings.Join(details, "; "))
+	return def.Message
 }
 
 func (def *badRequestDef) errCode() int {
 	return ErrCodeBadRequest
-}
-
-type conflictDef struct {
-	Message     string `json:"message"`
-	Deployments []struct {
-		ID string `json:"id"`
-	} `json:"deployments"`
-}
-
-func (def *conflictDef) message() string {
-	if len(def.Deployments) == 0 {
-		// 409 Conflict response to "POST /v2/apps".
-		return def.Message
-	}
-
-	// 409 Conflict response to "PUT /v2/apps/{appId}".
-	var ids []string
-	for _, deployment := range def.Deployments {
-		ids = append(ids, deployment.ID)
-	}
-	return fmt.Sprintf("%s (locking deployment IDs: %s)", def.Message, strings.Join(ids, ", "))
-}
-
-func (def *conflictDef) errCode() int {
-	if len(def.Deployments) == 0 {
-		return ErrCodeDuplicateID
-	}
-
-	return ErrCodeAppLocked
 }
 
 type unprocessableEntityDetails []struct {

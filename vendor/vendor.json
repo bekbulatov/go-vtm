@@ -1,37 +1,27 @@
 {
 	"comment": "",
-	"ignore": "",
+	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "WRu+mhZ2PfQu27qRr69HVGjtN4Q=",
+			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
 			"path": "github.com/davecgh/go-spew/spew",
 			"revision": "346938d642f2ec3594ed81d874461961cd0faa76",
 			"revisionTime": "2016-10-29T20:57:26Z"
 		},
 		{
-			"path": "github.com/davecgh/go-spew/spew/testdata",
-			"revision": "346938d642f2ec3594ed81d874461961cd0faa76"
-		},
-		{
-			"checksumSHA1": "fi8tUmUNxJXnKUHTXtW9Z1A0XYk=",
-			"path": "github.com/donovanhide/eventsource",
-			"revision": "fd1de70867126402be23c306e1ce32828455d85b",
-			"revisionTime": "2016-05-25T20:46:10Z"
-		},
-		{
-			"checksumSHA1": "aDjb3mG2PnOgRgQXVXBxzPNc9I0=",
+			"checksumSHA1": "p3IB18uJRs4dL2K5yx24MrLYE9A=",
 			"path": "github.com/google/go-querystring/query",
 			"revision": "53e6ce116135b80d037921a7fdd5138cf32d7a8a",
 			"revisionTime": "2017-01-11T10:11:55Z"
 		},
 		{
-			"checksumSHA1": "RZOdTSZN/PgcTqko5LzIAzw+UT4=",
+			"checksumSHA1": "LuFv4/jlrmFNnDb/5SCSEPAM9vU=",
 			"path": "github.com/pmezard/go-difflib/difflib",
 			"revision": "792786c7400a136282c1664665ae0a8db921c6c2",
 			"revisionTime": "2016-01-10T10:55:54Z"
 		},
 		{
-			"checksumSHA1": "8rxOh1Vlti1bzoIy6mH5eL0RYsI=",
+			"checksumSHA1": "JXUVA1jky8ZX8w09p2t5KLs97Nc=",
 			"path": "github.com/stretchr/testify/assert",
 			"revision": "4d4bfba8f1d1027c4fdbe371823030df51419987",
 			"revisionTime": "2017-01-30T11:31:45Z"

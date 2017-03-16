@@ -13,38 +13,41 @@ import (
 	"sync"
 )
 
-// Marathon is the interface to the marathon API
-type Marathon interface {
+// VTM is the interface to the VTM API
+type VTM interface {
 	// -- POOLS ---
 	ListPools() ([]string, error)
 	Pool(string) (*Pool, error)
+	CreatePool(string, *Pool) (*Pool, error)
+	DeletePool(string) error
+
+	// --- MISC ---
+
+	// ping the VTM
+	Ping() (bool, error)
 }
 
 var (
-	// ErrInvalidResponse is thrown when marathon responds with invalid or error response
-	ErrInvalidResponse = errors.New("invalid response from Marathon")
+	// ErrInvalidResponse is thrown when VTM responds with invalid or error response
+	ErrInvalidResponse = errors.New("invalid response from VTM")
 	// ErrTimeoutError is thrown when the operation has timed out
 	ErrTimeoutError = errors.New("the operation has timed out")
 )
 
-type marathonClient struct {
+type vtmClient struct {
 	sync.RWMutex
 	// the configuration for the client
 	config Config
-	// the ip address of the client
-	ipAddress string
-	// the http server
-	eventsHTTP *http.Server
 	// the http client use for making requests
 	httpClient *http.Client
 	// a custom logger for debug log messages
 	debugLog *log.Logger
 }
 
-// NewClient creates a new marathon client
+// NewClient creates a new vtmclient
 //		config:			the configuration to use
-func NewClient(config Config) (Marathon, error) {
-	// step: if no http client, set to default
+func NewClient(config Config) VTM {
+	// if no http client, set to default
 	if config.HTTPClient == nil {
 		config.HTTPClient = http.DefaultClient
 	}
@@ -54,38 +57,34 @@ func NewClient(config Config) (Marathon, error) {
 		debugLogOutput = ioutil.Discard
 	}
 
-	return &marathonClient{
+	return &vtmClient{
 		config:     config,
 		httpClient: config.HTTPClient,
 		debugLog:   log.New(debugLogOutput, "", 0),
-	}, nil
+	}
 }
 
 // Ping pings the current marathon endpoint (note, this is not a ICMP ping, but a rest api call)
-// func (r *marathonClient) Ping() (bool, error) {
-// 	if err := r.apiGet(marathonAPIPing, nil, nil); err != nil {
-// 		return false, err
-// 	}
-// 	return true, nil
-// }
+func (r *vtmClient) Ping() (bool, error) {
+	if err := r.apiGet(vtmAPIPing, nil, nil); err != nil {
+		return false, err
+	}
+	return true, nil
+}
 
-func (r *marathonClient) apiGet(uri string, post, result interface{}) error {
+func (r *vtmClient) apiGet(uri string, post, result interface{}) error {
 	return r.apiCall("GET", uri, post, result)
 }
 
-func (r *marathonClient) apiPut(uri string, post, result interface{}) error {
+func (r *vtmClient) apiPut(uri string, post, result interface{}) error {
 	return r.apiCall("PUT", uri, post, result)
 }
 
-func (r *marathonClient) apiPost(uri string, post, result interface{}) error {
-	return r.apiCall("POST", uri, post, result)
-}
-
-func (r *marathonClient) apiDelete(uri string, post, result interface{}) error {
+func (r *vtmClient) apiDelete(uri string, post, result interface{}) error {
 	return r.apiCall("DELETE", uri, post, result)
 }
 
-func (r *marathonClient) apiCall(method, url string, body, result interface{}) error {
+func (r *vtmClient) apiCall(method, url string, body, result interface{}) error {
 	// step: marshall the request to json
 	var requestBody []byte
 	var err error
@@ -94,6 +93,8 @@ func (r *marathonClient) apiCall(method, url string, body, result interface{}) e
 			return err
 		}
 	}
+
+	fmt.Printf("Request: %s\n", requestBody)
 
 	// step: create the api request
 	request, err := r.buildAPIRequest(method, url, bytes.NewReader(requestBody))
@@ -111,6 +112,8 @@ func (r *marathonClient) apiCall(method, url string, body, result interface{}) e
 	if err != nil {
 		return err
 	}
+
+	fmt.Printf("Response: %d %s\n", response.StatusCode, respBody)
 
 	if len(requestBody) > 0 {
 		r.debugLog.Printf("apiCall(): %v %v %s returned %v %s\n", request.Method, request.URL.String(), requestBody, response.Status, oneLogLine(respBody))
@@ -133,7 +136,7 @@ func (r *marathonClient) apiCall(method, url string, body, result interface{}) e
 }
 
 // buildAPIRequest creates a default API request
-func (r *marathonClient) buildAPIRequest(method, uri string, reader io.Reader) (request *http.Request, err error) {
+func (r *vtmClient) buildAPIRequest(method, uri string, reader io.Reader) (request *http.Request, err error) {
 	// Create the endpoint URL
 	url := fmt.Sprintf("%s/%s", r.config.URL, uri)
 

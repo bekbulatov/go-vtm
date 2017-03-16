@@ -87,7 +87,7 @@ type endpoint struct {
 	io.Closer
 
 	Server fakeServer
-	Client Marathon
+	Client VTM
 	URL    string
 }
 
@@ -149,10 +149,7 @@ func newFakeMarathonEndpoint(t *testing.T, configs *configContainer) *endpoint {
 	}
 
 	// step: create the client for the service
-	client, err := NewClient(*configs.client)
-	if err != nil {
-		t.Fatalf("Failed to create the fake client, %s, error: %s", configs.client.URL, err)
-	}
+	client := NewClient(*configs.client)
 
 	return &endpoint{
 		Server: fakeServer{

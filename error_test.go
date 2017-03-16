@@ -18,12 +18,12 @@ func TestErrors(t *testing.T) {
 		content    string
 	}{
 		// 400
-		{
-			httpCode: http.StatusBadRequest,
-			errCode:  ErrCodeBadRequest,
-			errText:  "Invalid JSON (path: '/id' errors: error.expected.jsstring, error.something.else; path: '/name' errors: error.not.inventive)",
-			content:  content400(),
-		},
+		// {
+		// 	httpCode: http.StatusBadRequest,
+		// 	errCode:  ErrCodeBadRequest,
+		// 	errText:  "Invalid JSON (path: '/id' errors: error.expected.jsstring, error.something.else; path: '/name' errors: error.not.inventive)",
+		// 	content:  content400(),
+		// },
 		// 401
 		{
 			httpCode: http.StatusUnauthorized,
@@ -44,22 +44,6 @@ func TestErrors(t *testing.T) {
 			errCode:  ErrCodeNotFound,
 			errText:  "App '/not_existent' does not exist",
 			content:  `{"message": "App '/not_existent' does not exist"}`,
-		},
-		// 409 POST
-		{
-			httpCode:   http.StatusConflict,
-			nameSuffix: "POST",
-			errCode:    ErrCodeDuplicateID,
-			errText:    "An app with id [/existing_app] already exists.",
-			content:    `{"message": "An app with id [/existing_app] already exists."}`,
-		},
-		// 409 PUT
-		{
-			httpCode:   http.StatusConflict,
-			nameSuffix: "PUT",
-			errCode:    ErrCodeAppLocked,
-			errText:    "App is locked (locking deployment IDs: 97c136bf-5a28-4821-9d94-480d9fbb01c8)",
-			content:    `{"message":"App is locked", "deployments": [ { "id": "97c136bf-5a28-4821-9d94-480d9fbb01c8" } ] }`,
 		},
 		// 422 pre-1.0 "details" key
 		{
