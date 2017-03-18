@@ -64,7 +64,7 @@ func NewClient(config Config) VTM {
 	}
 }
 
-// Ping pings the current marathon endpoint (note, this is not a ICMP ping, but a rest api call)
+// Ping pings the current VTM endpoint (note, this is not a ICMP ping, but a rest api call)
 func (r *vtmClient) Ping() (bool, error) {
 	if err := r.apiGet(vtmAPIPing, nil, nil); err != nil {
 		return false, err
@@ -125,7 +125,7 @@ func (r *vtmClient) apiCall(method, url string, body, result interface{}) error 
 	if response.StatusCode >= 200 && response.StatusCode <= 299 {
 		if result != nil {
 			if err := json.Unmarshal(respBody, result); err != nil {
-				r.debugLog.Printf("apiCall(): failed to unmarshall the response from marathon, error: %s\n", err)
+				r.debugLog.Printf("apiCall(): failed to unmarshall the response from VTM, error: %s\n", err)
 				return ErrInvalidResponse
 			}
 		}
@@ -140,7 +140,7 @@ func (r *vtmClient) buildAPIRequest(method, uri string, reader io.Reader) (reque
 	// Create the endpoint URL
 	url := fmt.Sprintf("%s/%s", r.config.URL, uri)
 
-	// Make the http request to Marathon
+	// Make the http request to VTM
 	request, err = http.NewRequest(method, url, reader)
 	if err != nil {
 		return nil, err

@@ -24,4 +24,7 @@ lint:
 	@echo ">> linting code"
 	@golint $(pkgs)
 
-.PHONY: all format vet lint test coverage build compile
+examples:
+	make -C examples all
+
+.PHONY: all format vet lint test coverage build compile examples

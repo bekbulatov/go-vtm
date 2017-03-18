@@ -19,7 +19,7 @@ func TestNewClient(t *testing.T) {
 }
 
 func TestPing(t *testing.T) {
-	endpoint := newFakeMarathonEndpoint(t, nil)
+	endpoint := newFakeVTMEndpoint(t, nil)
 	defer endpoint.Close()
 
 	pong, err := endpoint.Client.Ping()
@@ -78,7 +78,7 @@ func TestAPIRequest(t *testing.T) {
 		config.HTTPBasicAuthUser = x.Username
 		config.HTTPBasicPassword = x.Password
 
-		endpoint = newFakeMarathonEndpoint(t, &configContainer{
+		endpoint = newFakeVTMEndpoint(t, &configContainer{
 			client: &config,
 			server: &serverConfig{
 				username: x.ServerUsername,

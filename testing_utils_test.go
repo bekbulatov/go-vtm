@@ -99,7 +99,7 @@ func getTestURL(urlString string) string {
 	return fmt.Sprintf("%s://%s", parsedURL.Scheme, parsedURL.Host)
 }
 
-func newFakeMarathonEndpoint(t *testing.T, configs *configContainer) *endpoint {
+func newFakeVTMEndpoint(t *testing.T, configs *configContainer) *endpoint {
 	// step: read in the fake responses if required
 	initFakeMarathonResponses(t)
 

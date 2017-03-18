@@ -1,4 +1,4 @@
 vendor/*/
 cover.html
 cover.out
-marathon-adc
+examples/pools/pools
