@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	fakePoolName = "foo"
+	fakePoolName    = "test-pool"
+	fakeMonitorName = "test-monitor"
 
 	fakeMarathonURL         = "http://127.0.0.1:3000,127.0.0.1:3000,127.0.0.1:3000"
 	fakeMarathonURLWithPath = "http://127.0.0.1:3000/path,127.0.0.1:3000/path,127.0.0.1:3000/path"

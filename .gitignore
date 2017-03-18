@@ -2,3 +2,4 @@ vendor/*/
 cover.html
 cover.out
 examples/pools/pools
+examples/monitors/monitors

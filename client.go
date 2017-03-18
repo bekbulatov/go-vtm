@@ -21,6 +21,12 @@ type VTM interface {
 	CreatePool(string, *Pool) (*Pool, error)
 	DeletePool(string) error
 
+	// -- MONITORS ---
+	ListMonitors() ([]string, error)
+	Monitor(string) (*Monitor, error)
+	CreateMonitor(string, *Monitor) (*Monitor, error)
+	DeleteMonitor(string) error
+
 	// --- MISC ---
 
 	// ping the VTM
@@ -163,4 +169,8 @@ var oneLogLineRegex = regexp.MustCompile(`(?m)^\s*`)
 // escapes new line characters.
 func oneLogLine(in []byte) []byte {
 	return bytes.Replace(oneLogLineRegex.ReplaceAll(in, nil), []byte("\n"), []byte("\\n "), -1)
+}
+
+func buildURI(apiPrefix, path string) string {
+	return fmt.Sprintf("%s/%s", apiPrefix, path)
 }

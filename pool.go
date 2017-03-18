@@ -12,7 +12,7 @@ type NodeItem struct {
 	Weight   int    `json:"weight,omitempty"`
 }
 
-type Basic struct {
+type PoolBasic struct {
 	BandwidthClass                string      `json:"bandwidth_class,omitempty"`
 	FailurePool                   string      `json:"failure_pool,omitempty"`
 	MaxConnectionAttempts         int         `json:"max_connection_attempts,omitempty"`
@@ -30,7 +30,7 @@ type Basic struct {
 	Transparent                   bool        `json:"transparent,omitempty"`
 }
 
-type AutoScaling struct {
+type PoolAutoScaling struct {
 	AddnodeDelaytime int      `json:"addnode_delaytime,omitempty"`
 	CloudCredentials string   `json:"cloud_credentials,omitempty"`
 	Cluster          string   `json:"cluster,omitempty"`
@@ -55,7 +55,7 @@ type AutoScaling struct {
 	Subnetids        []string `json:"subnetids,omitempty"`
 }
 
-type Connection struct {
+type PoolConnection struct {
 	MaxConnectTime        int `json:"max_connect_time,omitempty"`
 	MaxConnectionsPerNode int `json:"max_connections_per_node,omitempty"`
 	MaxQueueSize          int `json:"max_queue_size,omitempty"`
@@ -63,38 +63,38 @@ type Connection struct {
 	QueueTimeout          int `json:"queue_timeout,omitempty"`
 }
 
-type DNSAutoscale struct {
+type PoolDNSAutoscale struct {
 	Enabled   bool     `json:"enabled,omitempty"`
 	Hostnames []string `json:"hostnames"`
 	Port      int      `json:"port,omitempty"`
 }
-type FTP struct {
+type PoolFTP struct {
 	SupportRFC2428 bool `json:"support_rfc_2428,omitempty"`
 }
-type HTTP struct {
+type PoolHTTP struct {
 	Keepalive              bool `json:"keepalive,omitempty"`
 	KeepaliveNonIdempotent bool `json:"keepalive_non_idempotent,omitempty"`
 }
-type KerberosProtocolTransition struct {
+type PoolKerberosProtocolTransition struct {
 	Principal string `json:"principal,omitempty"`
 	Target    string `json:"target,omitempty"`
 }
-type LoadBalancing struct {
+type PoolLoadBalancing struct {
 	Algorithm       string `json:"algorithm,omitempty"`
 	PriorityEnabled bool   `json:"priority_enabled,omitempty"`
 	PriorityNodes   int    `json:"priority_nodes,omitempty"`
 }
 
-type Node struct {
+type PoolNode struct {
 	CloseOnDeath  bool `json:"close_on_death,omitempty"`
 	RetryFailTime int  `json:"retry_fail_time,omitempty"`
 }
 
-type SMTP struct {
+type PoolSMTP struct {
 	SendStarttls bool `json:"send_starttls,omitempty"`
 }
 
-type SSL struct {
+type PoolSSL struct {
 	ClientAuth          bool     `json:"client_auth,omitempty"`
 	CommonNameMatch     []string `json:"common_name_match,omitempty"`
 	EllipticCurves      []string `json:"elliptic_curves,omitempty"`
@@ -112,30 +112,30 @@ type SSL struct {
 	StrictVerify        bool     `json:"strict_verify,omitempty"`
 }
 
-type TCP struct {
+type PoolTCP struct {
 	Nagle bool `json:"nagle,omitempty"`
 }
 
-type UDP struct {
+type PoolUDP struct {
 	AcceptFrom     string `json:"accept_from,omitempty"`
 	AcceptFromMask string `json:"accept_from_mask,omitempty"`
 }
 
 // Pool is the definition for a pool in VTM
 type Pool struct {
-	Basic                      *Basic                      `json:"basic,omitempty"`
-	AutoScaling                *AutoScaling                `json:"auto_scaling,omitempty"`
-	Connection                 *Connection                 `json:"connection,omitempty"`
-	DNSAutoscale               *DNSAutoscale               `json:"dns_autoscale,omitempty"`
-	FTP                        *FTP                        `json:"ftp,omitempty,omitempty"`
-	HTTP                       *HTTP                       `json:"http,omitempty"`
-	KerberosProtocolTransition *KerberosProtocolTransition `json:"kerberos_protocol_transition,omitempty"`
-	LoadBalancing              *LoadBalancing              `json:"load_balancing,omitempty"`
-	Node                       *Node                       `json:"node,omitempty"`
-	SMTP                       *SMTP                       `json:"smtp,omitempty"`
-	SSL                        *SSL                        `json:"ssl,omitempty"`
-	TCP                        *TCP                        `json:"tcp,omitempty"`
-	UDP                        *UDP                        `json:"udp,omitempty"`
+	Basic                      *PoolBasic                      `json:"basic,omitempty"`
+	AutoScaling                *PoolAutoScaling                `json:"auto_scaling,omitempty"`
+	Connection                 *PoolConnection                 `json:"connection,omitempty"`
+	DNSAutoscale               *PoolDNSAutoscale               `json:"dns_autoscale,omitempty"`
+	FTP                        *PoolFTP                        `json:"ftp,omitempty,omitempty"`
+	HTTP                       *PoolHTTP                       `json:"http,omitempty"`
+	KerberosProtocolTransition *PoolKerberosProtocolTransition `json:"kerberos_protocol_transition,omitempty"`
+	LoadBalancing              *PoolLoadBalancing              `json:"load_balancing,omitempty"`
+	Node                       *PoolNode                       `json:"node,omitempty"`
+	SMTP                       *PoolSMTP                       `json:"smtp,omitempty"`
+	SSL                        *PoolSSL                        `json:"ssl,omitempty"`
+	TCP                        *PoolTCP                        `json:"tcp,omitempty"`
+	UDP                        *PoolUDP                        `json:"udp,omitempty"`
 }
 
 // NewPool creates a default pool
@@ -168,7 +168,7 @@ func (p *Pool) AddNode(nodes ...NodeItem) *Pool {
 // EmptyNodes explicitly empties NodesTable
 func (p *Pool) EmptyNodes() *Pool {
 	if p.Basic == nil {
-		p.Basic = &Basic{}
+		p.Basic = &PoolBasic{}
 	}
 	p.Basic.NodesTable = &[]NodeItem{}
 	return p
@@ -209,7 +209,7 @@ func (c *vtmClient) ListPools() ([]string, error) {
 // 		name: 		the id used to identify the pool
 func (c *vtmClient) Pool(name string) (*Pool, error) {
 	result := new(poolWrapper)
-	if err := c.apiGet(buildURI(name), nil, &result); err != nil {
+	if err := c.apiGet(buildURI(vtmAPIPools, name), nil, &result); err != nil {
 		return nil, err
 	}
 	return result.Pool, nil
@@ -221,7 +221,7 @@ func (c *vtmClient) CreatePool(name string, pool *Pool) (*Pool, error) {
 	wrapper := new(poolWrapper)
 	wrapper.Pool = pool
 	result := new(poolWrapper)
-	if err := c.apiPut(buildURI(name), wrapper, &result); err != nil {
+	if err := c.apiPut(buildURI(vtmAPIPools, name), wrapper, &result); err != nil {
 		return nil, err
 	}
 	return result.Pool, nil
@@ -230,12 +230,8 @@ func (c *vtmClient) CreatePool(name string, pool *Pool) (*Pool, error) {
 // DeletePool deletes an application from VTM
 // 		name: 		the id used to identify the pool
 func (c *vtmClient) DeletePool(name string) error {
-	if err := c.apiDelete(buildURI(name), nil, nil); err != nil {
+	if err := c.apiDelete(buildURI(vtmAPIPools, name), nil, nil); err != nil {
 		return err
 	}
 	return nil
-}
-
-func buildURI(path string) string {
-	return fmt.Sprintf("%s/%s", vtmAPIPools, path)
 }

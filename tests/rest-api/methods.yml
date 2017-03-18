@@ -28,7 +28,7 @@
         }
       ]
     }
-- uri: /api/tm/3.5/config/active/pools/foo
+- uri: /api/tm/3.5/config/active/pools/test-pool
   method: GET
   content: |
     {
@@ -154,7 +154,7 @@
         }
       }
     }
-- uri: /api/tm/3.5/config/active/pools/foo
+- uri: /api/tm/3.5/config/active/pools/test-pool
   method: PUT
   content: |
     {
@@ -280,6 +280,128 @@
         }
       }
     }
-- uri: /api/tm/3.5/config/active/pools/foo
+- uri: /api/tm/3.5/config/active/pools/test-pool
   method: DELETE
   content:
+- uri: /api/tm/3.5/config/active/monitors
+  method: GET
+  content: |
+    {
+      "children":[
+        {
+          "name":"foo",
+          "href":"/api/tm/3.5/config/active/monitors/foo"
+        },
+        {
+          "name":"bar",
+          "href":"/api/tm/3.5/config/active/monitors/bar"
+        }
+      ]
+    }
+- uri: /api/tm/3.5/config/active/monitors/test-monitor
+  method: GET
+  content: |
+    {
+      "properties":{
+        "basic":{
+          "back_off":true,
+          "delay":5,
+          "failures":3,
+          "machine":"",
+          "note":"",
+          "scope":"pernode",
+          "timeout":5,
+          "type":"tcp_transaction",
+          "use_ssl":false,
+          "verbose":false
+        },
+        "http":{
+          "authentication":"",
+          "body_regex":"",
+          "host_header":"",
+          "path":"/",
+          "status_regex":"^[234][0-9][0-9]$"
+        },
+        "rtsp":{
+          "body_regex":"",
+          "path":"/",
+          "status_regex":"^[234][0-9][0-9]$"
+        },
+        "script":{
+          "arguments":[
+
+          ],
+          "program":""
+        },
+        "sip":{
+          "body_regex":"",
+          "status_regex":"^[234][0-9][0-9]$",
+          "transport":"udp"
+        },
+        "tcp":{
+          "close_string":"QUIT\\r\\n",
+          "max_response_len":2048,
+          "response_regex":"^220 [^\\n]+\\n",
+          "write_string":""
+        },
+        "udp":{
+          "accept_all":false
+        }
+      }
+    }
+- uri: /api/tm/3.5/config/active/monitors/test-monitor
+  method: PUT
+  content: |
+    {
+      "properties":{
+        "basic":{
+          "back_off":true,
+          "delay":5,
+          "failures":3,
+          "machine":"",
+          "note":"",
+          "scope":"pernode",
+          "timeout":5,
+          "type":"tcp_transaction",
+          "use_ssl":false,
+          "verbose":false
+        },
+        "http":{
+          "authentication":"",
+          "body_regex":"",
+          "host_header":"",
+          "path":"/",
+          "status_regex":"^[234][0-9][0-9]$"
+        },
+        "rtsp":{
+          "body_regex":"",
+          "path":"/",
+          "status_regex":"^[234][0-9][0-9]$"
+        },
+        "script":{
+          "arguments":[
+
+          ],
+          "program":""
+        },
+        "sip":{
+          "body_regex":"",
+          "status_regex":"^[234][0-9][0-9]$",
+          "transport":"udp"
+        },
+        "tcp":{
+          "close_string":"QUIT\\r\\n",
+          "max_response_len":2048,
+          "response_regex":"^220 [^\\n]+\\n",
+          "write_string":""
+        },
+        "udp":{
+          "accept_all":false
+        }
+      }
+    }
+- uri: /api/tm/3.5/config/active/monitors/test-monitor
+  method: DELETE
+  content:
+
+
