@@ -1,13 +1,26 @@
 package vtm
 
 import (
-	"fmt"
 	"net/http"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestPoolNodes(t *testing.T) {
+	pool := NewPool()
+	assert.Nil(t, pool.Nodes())
+
+	pool.AddNode(NodeItem{Node: "foo.bar.com:8080"}).AddNode(NodeItem{Node: "foo.bar.com:8081"})
+	assert.Equal(t, 2, len(*pool.Nodes()))
+	assert.Equal(t, "foo.bar.com:8080", (*pool.Nodes())[0].Node)
+	assert.Equal(t, "foo.bar.com:8081", (*pool.Nodes())[1].Node)
+
+	pool.EmptyNodes()
+	assert.NotNil(t, pool.Nodes())
+	assert.Equal(t, 0, len(*pool.Nodes()))
+}
 
 func TestListPools(t *testing.T) {
 	endpoint := newFakeVTMEndpoint(t, nil)
@@ -28,10 +41,9 @@ func TestPool(t *testing.T) {
 	pool, err := endpoint.Client.Pool(fakePoolName)
 	assert.NoError(t, err)
 	assert.NotNil(t, pool)
-	assert.NotNil(t, pool.Basic)
-	assert.NotNil(t, pool.Basic.NodesTable)
-	assert.Equal(t, len(*pool.Basic.NodesTable), 1)
-	assert.Equal(t, (*pool.Basic.NodesTable)[0].Node, "foo.bar.com:31199")
+	assert.NotNil(t, pool.Nodes())
+	assert.Equal(t, len(*pool.Nodes()), 1)
+	assert.Equal(t, (*pool.Nodes())[0].Node, "foo.bar.com:31199")
 
 	_, err = endpoint.Client.Pool("no_such_pool")
 	assert.Error(t, err)
@@ -65,11 +77,9 @@ func TestCreatePool(t *testing.T) {
 	p, err := endpoint.Client.CreatePool(fakePoolName, pool)
 	assert.NoError(t, err)
 	assert.NotNil(t, p)
-	assert.NotNil(t, p.Basic)
-	assert.NotNil(t, p.Basic.NodesTable)
-	fmt.Println(p)
-	assert.Equal(t, len(*p.Basic.NodesTable), 1)
-	assert.Equal(t, (*p.Basic.NodesTable)[0].Node, "foo.bar.com:123")
+	assert.NotNil(t, p.Nodes())
+	assert.Equal(t, len(*p.Nodes()), 1)
+	assert.Equal(t, (*p.Nodes())[0].Node, "foo.bar.com:123")
 }
 
 func TestDeletePool(t *testing.T) {

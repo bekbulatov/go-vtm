@@ -156,17 +156,12 @@ func (p *Pool) String() string {
 // AddNode adds one or more nodes to the pool
 //      arguments:  the pool(s) you are adding
 func (p *Pool) AddNode(nodes ...NodeItem) *Pool {
-	if p.Basic == nil {
-		p.Basic = &Basic{}
+	if p.Basic == nil || p.Basic.NodesTable == nil {
+		p.EmptyNodes()
 	}
-	if p.Basic.NodesTable == nil {
-		p.Basic.NodesTable = &[]NodeItem{}
-	}
-
 	nodeTable := *p.Basic.NodesTable
 	nodeTable = append(nodeTable, nodes...)
 	p.Basic.NodesTable = &nodeTable
-
 	return p
 }
 
@@ -175,10 +170,15 @@ func (p *Pool) EmptyNodes() *Pool {
 	if p.Basic == nil {
 		p.Basic = &Basic{}
 	}
-	if p.Basic.NodesTable == nil {
-		p.Basic.NodesTable = &[]NodeItem{}
-	}
+	p.Basic.NodesTable = &[]NodeItem{}
 	return p
+}
+
+func (p *Pool) Nodes() *[]NodeItem {
+	if p.Basic == nil {
+		return nil
+	}
+	return p.Basic.NodesTable
 }
 
 type poolWrapper struct {
