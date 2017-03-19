@@ -100,7 +100,7 @@ func (r *vtmClient) apiCall(method, url string, body, result interface{}) error 
 		}
 	}
 
-	fmt.Printf("Request: %s\n", requestBody)
+	// fmt.Printf("Request: %s\n", requestBody)
 
 	// step: create the api request
 	request, err := r.buildAPIRequest(method, url, bytes.NewReader(requestBody))
@@ -119,7 +119,7 @@ func (r *vtmClient) apiCall(method, url string, body, result interface{}) error 
 		return err
 	}
 
-	fmt.Printf("Response: %d %s\n", response.StatusCode, respBody)
+	// fmt.Printf("Response: %d %s\n", response.StatusCode, respBody)
 
 	if len(requestBody) > 0 {
 		r.debugLog.Printf("apiCall(): %v %v %s returned %v %s\n", request.Method, request.URL.String(), requestBody, response.Status, oneLogLine(respBody))

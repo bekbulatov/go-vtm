@@ -9,7 +9,7 @@ import (
 
 func TestNewClient(t *testing.T) {
 	config := Config{
-		URL: "http://marathon",
+		URL: "http://vtm",
 	}
 	cl := NewClient(config)
 

@@ -16,15 +16,6 @@ import (
 const (
 	fakePoolName    = "test-pool"
 	fakeMonitorName = "test-monitor"
-
-	fakeMarathonURL         = "http://127.0.0.1:3000,127.0.0.1:3000,127.0.0.1:3000"
-	fakeMarathonURLWithPath = "http://127.0.0.1:3000/path,127.0.0.1:3000/path,127.0.0.1:3000/path"
-	fakeGroupName           = "/test"
-	fakeGroupName1          = "/qa/product/1"
-	fakeTaskID              = "fake-app.fake-task"
-	fakeAppNameBroken       = "/fake-app-broken"
-	fakeDeploymentID        = "867ed450-f6a8-4d33-9b0e-e11c5513990b"
-	fakeAppNameUnhealthy    = "/no-health-check-results-app"
 )
 
 var (
@@ -60,7 +51,7 @@ type restMethod struct {
 	Scope string `yaml:"scope,omitempty"`
 }
 
-// serverConfig holds the Marathon server configuration
+// serverConfig holds the VTM server configuration
 type serverConfig struct {
 	// Username for basic auth
 	username string
@@ -71,7 +62,7 @@ type serverConfig struct {
 	scope string
 }
 
-// configContainer holds both server and client Marathon configuration
+// configContainer holds both server and client VTM configuration
 type configContainer struct {
 	client *Config
 	server *serverConfig
@@ -102,7 +93,7 @@ func getTestURL(urlString string) string {
 
 func newFakeVTMEndpoint(t *testing.T, configs *configContainer) *endpoint {
 	// step: read in the fake responses if required
-	initFakeMarathonResponses(t)
+	initFakeVTMResponses(t)
 
 	// step: fill in the default if required
 	defaultConfig := NewDefaultConfig()
@@ -122,7 +113,7 @@ func newFakeVTMEndpoint(t *testing.T, configs *configContainer) *endpoint {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", authMiddleware(configs.server, func(writer http.ResponseWriter, reader *http.Request) {
 		respKey := fakeResponseMapKey(reader.Method, reader.RequestURI, configs.server.scope)
-		fmt.Println(respKey)
+		// fmt.Println(respKey)
 		fakeRespIndices.Lock()
 		fakeRespIndex := fakeRespIndices.m[respKey]
 		fakeRespIndices.m[respKey]++
@@ -162,31 +153,7 @@ func newFakeVTMEndpoint(t *testing.T, configs *configContainer) *endpoint {
 	}
 }
 
-// basicAuthMiddleware handles basic auth
-func basicAuthMiddleware(server *serverConfig, next http.HandlerFunc) func(http.ResponseWriter, *http.Request) {
-	unauthorized := `{"message": "invalid username or password"}`
-
-	return func(w http.ResponseWriter, r *http.Request) {
-		// step: is authentication required?
-		if server.username != "" && server.password != "" {
-			u, p, found := r.BasicAuth()
-			// step: if no auth found, error it
-			if !found {
-				http.Error(w, unauthorized, 401)
-				return
-			}
-			// step: if username and password don't match, error it
-			if server.username != u || server.password != p {
-				http.Error(w, unauthorized, 401)
-				return
-			}
-		}
-
-		next(w, r)
-	}
-}
-
-// authMiddleware handles basic auth and dcos_acs_token
+// authMiddleware handles basic auth
 func authMiddleware(server *serverConfig, next http.HandlerFunc) func(http.ResponseWriter, *http.Request) {
 	unauthorized := `{"message": "invalid username or password"}`
 
@@ -211,8 +178,8 @@ func authMiddleware(server *serverConfig, next http.HandlerFunc) func(http.Respo
 	}
 }
 
-// initFakeMarathonResponses reads in the marathon fake responses from the yaml file
-func initFakeMarathonResponses(t *testing.T) {
+// initFakeVTMResponses reads in the vtm fake responses from the yaml file
+func initFakeVTMResponses(t *testing.T) {
 	once.Do(func() {
 		fakeResponses = make(map[string][]indexedResponse, 0)
 		var methods []*restMethod

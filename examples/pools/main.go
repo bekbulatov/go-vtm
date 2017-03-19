@@ -60,12 +60,12 @@ func main() {
 
 	log.Printf("Creating the pool: %s", poolName)
 	pool := vtm.NewPool()
-	pool.AddNode(vtm.NodeItem{Node: "foo.bar.com:123"})
+	pool.AddNode(vtm.NodeItem{Node: "foo.bar.com:123", Weight: 1})
 	_, err = client.CreatePool(poolName, pool)
 	assert(err)
 	log.Printf("Successfully created the pool: %s", poolName)
 
-	pool, err = client.Pool(poolName)
+	pool, err = client.Pool("my-pool222")
 	assert(err)
 	log.Printf("Pool: %v", pool)
 

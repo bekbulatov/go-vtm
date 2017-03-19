@@ -65,7 +65,7 @@ type PoolConnection struct {
 
 type PoolDNSAutoscale struct {
 	Enabled   bool     `json:"enabled,omitempty"`
-	Hostnames []string `json:"hostnames"`
+	Hostnames []string `json:"hostnames,omitempty"`
 	Port      int      `json:"port,omitempty"`
 }
 type PoolFTP struct {

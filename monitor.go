@@ -6,57 +6,57 @@ import (
 )
 
 type MonitorBasic struct {
-	BackOff  bool   `json:"back_off"`
-	Delay    int    `json:"delay"`
-	Failures int    `json:"failures"`
-	Machine  string `json:"machine"`
-	Note     string `json:"note"`
-	Scope    string `json:"scope"`
-	Timeout  int    `json:"timeout"`
-	Type     string `json:"type"`
-	UseSsl   bool   `json:"use_ssl"`
-	Verbose  bool   `json:"verbose"`
+	BackOff  bool   `json:"back_off,omitempty"`
+	Delay    int    `json:"delay,omitempty"`
+	Failures int    `json:"failures,omitempty"`
+	Machine  string `json:"machine,omitempty"`
+	Note     string `json:"note,omitempty"`
+	Scope    string `json:"scope,omitempty"`
+	Timeout  int    `json:"timeout,omitempty"`
+	Type     string `json:"type,omitempty"`
+	UseSsl   bool   `json:"use_ssl,omitempty"`
+	Verbose  bool   `json:"verbose,omitempty"`
 }
 type MonitorHTTP struct {
-	Authentication string `json:"authentication"`
-	BodyRegex      string `json:"body_regex"`
-	HostHeader     string `json:"host_header"`
-	Path           string `json:"path"`
-	StatusRegex    string `json:"status_regex"`
+	Authentication string `json:"authentication,omitempty"`
+	BodyRegex      string `json:"body_regex,omitempty"`
+	HostHeader     string `json:"host_header,omitempty"`
+	Path           string `json:"path,omitempty"`
+	StatusRegex    string `json:"status_regex,omitempty"`
 }
-type MonitorRtsp struct {
-	BodyRegex   string `json:"body_regex"`
-	Path        string `json:"path"`
-	StatusRegex string `json:"status_regex"`
+type MonitorRTSP struct {
+	BodyRegex   string `json:"body_regex,omitempty"`
+	Path        string `json:"path,omitempty"`
+	StatusRegex string `json:"status_regex,omitempty"`
 }
 type MonitorScript struct {
-	Arguments []interface{} `json:"arguments"`
-	Program   string        `json:"program"`
+	Arguments []interface{} `json:"arguments,omitempty"` // TODO (see page 80)
+	Program   string        `json:"program,omitempty"`
 }
-type MonitorSip struct {
-	BodyRegex   string `json:"body_regex"`
-	StatusRegex string `json:"status_regex"`
-	Transport   string `json:"transport"`
+type MonitorSIP struct {
+	BodyRegex   string `json:"body_regex,omitempty"`
+	StatusRegex string `json:"status_regex,omitempty"`
+	Transport   string `json:"transport,omitempty"`
 }
 type MonitorTCP struct {
-	CloseString    string `json:"close_string"`
-	MaxResponseLen int    `json:"max_response_len"`
-	ResponseRegex  string `json:"response_regex"`
-	WriteString    string `json:"write_string"`
+	CloseString    string `json:"close_string,omitempty"`
+	MaxResponseLen int    `json:"max_response_len,omitempty"`
+	ResponseRegex  string `json:"response_regex,omitempty"`
+	WriteString    string `json:"write_string,omitempty"`
 }
 type MonitorUDP struct {
-	AcceptAll bool `json:"accept_all"`
+	AcceptAll bool `json:"accept_all,omitempty"`
 }
 
 // Monitor is the definition for a monitor in VTM
 type Monitor struct {
-	Basic  *MonitorBasic  `json:"basic"`
-	HTTP   *MonitorHTTP   `json:"http"`
-	Rtsp   *MonitorRtsp   `json:"rtsp"`
-	Script *MonitorScript `json:"script"`
-	Sip    *MonitorSip    `json:"sip"`
-	TCP    *MonitorTCP    `json:"tcp"`
-	UDP    *MonitorUDP    `json:"udp"`
+	Basic  *MonitorBasic  `json:"basic,omitempty"`
+	HTTP   *MonitorHTTP   `json:"http,omitempty"`
+	RTSP   *MonitorRTSP   `json:"rtsp,omitempty"`
+	Script *MonitorScript `json:"script,omitempty"`
+	SIP    *MonitorSIP    `json:"sip,omitempty"`
+	TCP    *MonitorTCP    `json:"tcp,omitempty"`
+	UDP    *MonitorUDP    `json:"udp,omitempty"`
 }
 
 // NewMonitor creates a default monitor

@@ -18,56 +18,32 @@ func TestErrors(t *testing.T) {
 		content    string
 	}{
 		// 400
-		// {
-		// 	httpCode: http.StatusBadRequest,
-		// 	errCode:  ErrCodeBadRequest,
-		// 	errText:  "Invalid JSON (path: '/id' errors: error.expected.jsstring, error.something.else; path: '/name' errors: error.not.inventive)",
-		// 	content:  content400(),
-		// },
+		{
+			httpCode: http.StatusBadRequest,
+			errCode:  ErrCodeBadRequest,
+			errText:  `The resource provided is invalid (basic.nodes_table."foo.bar.com:123".weight: Value '-1' must be within 1-100)`,
+			content:  content400(),
+		},
 		// 401
 		{
 			httpCode: http.StatusUnauthorized,
 			errCode:  ErrCodeUnauthorized,
-			errText:  "invalid username or password.",
-			content:  `{"message": "invalid username or password."}`,
+			errText:  "User name or password was invalid",
+			content:  `{"error_id":"auth.invalid","error_text":"User name or password was invalid"}`,
 		},
 		// 403
 		{
 			httpCode: http.StatusForbidden,
 			errCode:  ErrCodeForbidden,
 			errText:  "Not Authorized to perform this action!",
-			content:  `{"message": "Not Authorized to perform this action!"}`,
+			content:  `{"error_text": "Not Authorized to perform this action!"}`,
 		},
 		// 404
 		{
 			httpCode: http.StatusNotFound,
 			errCode:  ErrCodeNotFound,
-			errText:  "App '/not_existent' does not exist",
-			content:  `{"message": "App '/not_existent' does not exist"}`,
-		},
-		// 422 pre-1.0 "details" key
-		{
-			httpCode:   422,
-			nameSuffix: "pre-1.0 details key",
-			errCode:    ErrCodeInvalidBean,
-			errText:    "Something is not valid (attribute 'upgradeStrategy.minimumHealthCapacity': is greater than 1; attribute 'foobar': foo does not have enough bar)",
-			content:    content422("details"),
-		},
-		// 422 pre-1.0 "errors" key
-		{
-			httpCode:   422,
-			nameSuffix: "pre-1.0 errors key",
-			errCode:    ErrCodeInvalidBean,
-			errText:    "Something is not valid (attribute 'upgradeStrategy.minimumHealthCapacity': is greater than 1; attribute 'foobar': foo does not have enough bar)",
-			content:    content422("errors"),
-		},
-		// 422 1.0 "invalid object"
-		{
-			httpCode:   422,
-			nameSuffix: "invalid object",
-			errCode:    ErrCodeInvalidBean,
-			errText:    "Object is not valid (path: 'upgradeStrategy.minimumHealthCapacity' errors: is greater than 1; path: '/value' errors: service port conflict app /app1, service port conflict app /app2)",
-			content:    content422V1(),
+			errText:  "Resource '/api/tm/3.5/config/active/pools/my-pool' does not exist",
+			content:  `{"error_id":"resource.not_found","error_text":"Resource '/api/tm/3.5/config/active/pools/my-pool' does not exist"}`,
 		},
 		// 499 unknown error
 		{
@@ -75,16 +51,16 @@ func TestErrors(t *testing.T) {
 			nameSuffix: "unknown error",
 			errCode:    ErrCodeUnknown,
 			errText:    "unknown error",
-			content:    `{"message": "unknown error"}`,
+			content:    `{"error_text": "unknown error"}`,
 		},
 		// 500
 		{
 			httpCode: http.StatusInternalServerError,
 			errCode:  ErrCodeServer,
 			errText:  "internal server error",
-			content:  `{"message": "internal server error"}`,
+			content:  `{"error_text": "internal server error"}`,
 		},
-		// 503 (no JSON)
+		// // 503 (no JSON)
 		{
 			httpCode:   http.StatusServiceUnavailable,
 			nameSuffix: "no JSON",
@@ -102,55 +78,26 @@ func TestErrors(t *testing.T) {
 		apiErr := NewAPIError(test.httpCode, []byte(test.content))
 		gotErrCode := apiErr.(*APIError).ErrCode
 		assert.Equal(t, test.errCode, gotErrCode, fmt.Sprintf("HTTP code %s (error code): got %d, want %d", name, gotErrCode, test.errCode))
-		pureErrText := strings.TrimPrefix(apiErr.Error(), "Marathon API error: ")
+		pureErrText := strings.TrimPrefix(apiErr.Error(), "VTM API error: ")
 		assert.Equal(t, pureErrText, test.errText, fmt.Sprintf("HTTP code %s (error text)", name))
 	}
 }
 
 func content400() string {
 	return `{
-	"message": "Invalid JSON",
-	"details": [
-		{
-			"path": "/id",
-			"errors": ["error.expected.jsstring", "error.something.else"]
-		},
-		{
-			"path": "/name",
-			"errors": ["error.not.inventive"]
-		}
-	]
-}`
-}
-
-func content422(detailsPropKey string) string {
-	return fmt.Sprintf(`{
-	"message": "Something is not valid",
-	"%s": [
-		{
-			"attribute": "upgradeStrategy.minimumHealthCapacity",
-			"error": "is greater than 1"
-		},
-		{
-			"attribute": "foobar",
-			"error": "foo does not have enough bar"
-		}
-	]
-}`, detailsPropKey)
-}
-
-func content422V1() string {
-	return `{
-	"message": "Object is not valid",
-	"details": [
-		{
-			"path": "upgradeStrategy.minimumHealthCapacity",
-			"errors": ["is greater than 1"]
-		},
-		{
-			"path": "/value",
-			"errors": ["service port conflict app /app1", "service port conflict app /app2"]
-		}
-	]
+  "error_id":"resource.validation_error",
+  "error_text":"The resource provided is invalid",
+  "error_info":{
+    "basic":{
+      "nodes_table":{
+        "foo.bar.com:123":{
+          "weight":{
+            "error_id":"num.out_of_range",
+            "error_text":"Value '-1' must be within 1-100"
+          }
+        }
+      }
+    }
+  }
 }`
 }

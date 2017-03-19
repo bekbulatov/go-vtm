@@ -1,11 +1,15 @@
 GO := go
 pkgs = $(shell $(GO) list ./... | grep -v /vendor/)
 
-all: format vet build test
+all: format build vet test examples
 
 format:
 	@echo ">> formatting code"
 	@$(GO) fmt $(pkgs)
+
+build:
+	@echo ">> building binaries"
+	@$(GO) build
 
 vet:
 	@echo ">> vetting code"
@@ -16,15 +20,12 @@ test:
 	@$(GO) test -short -coverprofile cover.out
 	@$(GO) tool cover -html=cover.out -o cover.html
 
-build:
-	@echo ">> building binaries"
-	@$(GO) build
+examples:
+	@echo ">> building examples"
+	make -C examples all
 
 lint:
 	@echo ">> linting code"
 	@golint $(pkgs)
 
-examples:
-	make -C examples all
-
-.PHONY: all format vet lint test coverage build compile examples
+.PHONY: all format build vet test examples lint
