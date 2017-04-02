@@ -18,12 +18,14 @@ type VTM interface {
 	// -- POOLS ---
 	ListPools() ([]string, error)
 	Pool(string) (*Pool, error)
+	PoolExists(string) (bool, error)
 	CreatePool(string, *Pool) (*Pool, error)
 	DeletePool(string) error
 
 	// -- MONITORS ---
 	ListMonitors() ([]string, error)
 	Monitor(string) (*Monitor, error)
+	MonitorExists(string) (bool, error)
 	CreateMonitor(string, *Monitor) (*Monitor, error)
 	DeleteMonitor(string) error
 
@@ -80,6 +82,10 @@ func (r *vtmClient) Ping() (bool, error) {
 
 func (r *vtmClient) apiGet(uri string, post, result interface{}) error {
 	return r.apiCall("GET", uri, post, result)
+}
+
+func (r *vtmClient) apiHead(uri string, post, result interface{}) error {
+	return r.apiCall("HEAD", uri, post, result)
 }
 
 func (r *vtmClient) apiPut(uri string, post, result interface{}) error {

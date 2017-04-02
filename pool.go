@@ -215,6 +215,15 @@ func (c *vtmClient) Pool(name string) (*Pool, error) {
 	return result.Pool, nil
 }
 
+// PoolExists checks if pool exists in VTM using HEAD request
+// 		name: 		the id used to identify the pool
+func (r *vtmClient) PoolExists(name string) (bool, error) {
+	if err := r.apiHead(buildURI(vtmAPIPools, name), nil, nil); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 // CreatePool creates a new pool in VTM
 // 		pool:		the structure holding the pool configuration
 func (c *vtmClient) CreatePool(name string, pool *Pool) (*Pool, error) {

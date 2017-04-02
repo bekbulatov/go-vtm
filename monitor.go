@@ -14,7 +14,7 @@ type MonitorBasic struct {
 	Scope    string `json:"scope,omitempty"`
 	Timeout  int    `json:"timeout,omitempty"`
 	Type     string `json:"type,omitempty"`
-	UseSsl   bool   `json:"use_ssl,omitempty"`
+	UseSSL   bool   `json:"use_ssl,omitempty"`
 	Verbose  bool   `json:"verbose,omitempty"`
 }
 type MonitorHTTP struct {
@@ -106,6 +106,15 @@ func (c *vtmClient) Monitor(name string) (*Monitor, error) {
 		return nil, err
 	}
 	return result.Monitor, nil
+}
+
+// MonitorExists checks if pool exists in VTM using HEAD request
+// 		name: 		the id used to identify the monitor
+func (r *vtmClient) MonitorExists(name string) (bool, error) {
+	if err := r.apiHead(buildURI(vtmAPIMonitors, name), nil, nil); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // CreateMonitor creates a new monitor in VTM
