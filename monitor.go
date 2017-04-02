@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// MonitorBasic contains basic properties
 type MonitorBasic struct {
 	BackOff  bool   `json:"back_off,omitempty"`
 	Delay    int    `json:"delay,omitempty"`
@@ -17,6 +18,8 @@ type MonitorBasic struct {
 	UseSSL   bool   `json:"use_ssl,omitempty"`
 	Verbose  bool   `json:"verbose,omitempty"`
 }
+
+// MonitorHTTP contains properties for the "http" section
 type MonitorHTTP struct {
 	Authentication string `json:"authentication,omitempty"`
 	BodyRegex      string `json:"body_regex,omitempty"`
@@ -24,26 +27,36 @@ type MonitorHTTP struct {
 	Path           string `json:"path,omitempty"`
 	StatusRegex    string `json:"status_regex,omitempty"`
 }
+
+// MonitorRTSP contains properties for the "rtsp" section
 type MonitorRTSP struct {
 	BodyRegex   string `json:"body_regex,omitempty"`
 	Path        string `json:"path,omitempty"`
 	StatusRegex string `json:"status_regex,omitempty"`
 }
+
+// MonitorScript contains properties for the "script" section:
 type MonitorScript struct {
 	Arguments []interface{} `json:"arguments,omitempty"` // TODO (see page 80)
 	Program   string        `json:"program,omitempty"`
 }
+
+// MonitorSIP contains properties for the "sip" section:
 type MonitorSIP struct {
 	BodyRegex   string `json:"body_regex,omitempty"`
 	StatusRegex string `json:"status_regex,omitempty"`
 	Transport   string `json:"transport,omitempty"`
 }
+
+// MonitorTCP contains properties for the "tcp" section:
 type MonitorTCP struct {
 	CloseString    string `json:"close_string,omitempty"`
 	MaxResponseLen int    `json:"max_response_len,omitempty"`
 	ResponseRegex  string `json:"response_regex,omitempty"`
 	WriteString    string `json:"write_string,omitempty"`
 }
+
+// MonitorUDP contains properties for the "udp" section:
 type MonitorUDP struct {
 	AcceptAll bool `json:"accept_all,omitempty"`
 }
@@ -110,7 +123,7 @@ func (c *vtmClient) Monitor(name string) (*Monitor, error) {
 
 // MonitorExists checks if pool exists in VTM using HEAD request
 // 		name: 		the id used to identify the monitor
-func (r *vtmClient) MonitorExists(name string) (bool, error) {
+func (c *vtmClient) MonitorExists(name string) (bool, error) {
 	if err := r.apiHead(buildURI(vtmAPIMonitors, name), nil, nil); err != nil {
 		return false, err
 	}

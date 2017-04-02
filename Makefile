@@ -1,5 +1,5 @@
 GO := go
-pkgs = $(shell $(GO) list ./... | grep -v /vendor/)
+pkgs = $(shell $(GO) list ./... | grep -v /vendor/ | grep -v /examples/)
 
 all: format build vet test examples
 
