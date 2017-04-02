@@ -124,7 +124,7 @@ func (c *vtmClient) Monitor(name string) (*Monitor, error) {
 // MonitorExists checks if pool exists in VTM using HEAD request
 // 		name: 		the id used to identify the monitor
 func (c *vtmClient) MonitorExists(name string) (bool, error) {
-	if err := r.apiHead(buildURI(vtmAPIMonitors, name), nil, nil); err != nil {
+	if err := c.apiHead(buildURI(vtmAPIMonitors, name), nil, nil); err != nil {
 		return false, err
 	}
 	return true, nil

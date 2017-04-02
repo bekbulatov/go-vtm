@@ -237,7 +237,7 @@ func (c *vtmClient) Pool(name string) (*Pool, error) {
 // PoolExists checks if pool exists in VTM using HEAD request
 // 		name: 		the id used to identify the pool
 func (c *vtmClient) PoolExists(name string) (bool, error) {
-	if err := r.apiHead(buildURI(vtmAPIPools, name), nil, nil); err != nil {
+	if err := c.apiHead(buildURI(vtmAPIPools, name), nil, nil); err != nil {
 		return false, err
 	}
 	return true, nil
