@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"flag"
 	"log"
-	"net"
 	"net/http"
 	"time"
 
@@ -37,10 +36,6 @@ func main() {
 	config.HTTPClient = &http.Client{
 		Timeout: (time.Duration(1) * time.Second),
 		Transport: &http.Transport{
-			Dial: (&net.Dialer{
-				Timeout:   500 * time.Millisecond,
-				KeepAlive: 10 * time.Second,
-			}).Dial,
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: true,
 			},
@@ -65,7 +60,7 @@ func main() {
 	assert(err)
 	log.Printf("Successfully created the pool: %s", poolName)
 
-	pool, err = client.Pool("my-pool222")
+	pool, err = client.Pool(poolName)
 	assert(err)
 	log.Printf("Pool: %v", pool)
 

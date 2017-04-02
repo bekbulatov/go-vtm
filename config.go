@@ -23,7 +23,7 @@ type Config struct {
 // NewDefaultConfig create a default client config
 func NewDefaultConfig() Config {
 	return Config{
-		URL:       "http://127.0.0.1:8080",
+		URL:       "http://127.0.0.1:9070",
 		LogOutput: ioutil.Discard,
 	}
 }

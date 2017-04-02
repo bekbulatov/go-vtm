@@ -59,7 +59,7 @@ func TestErrors(t *testing.T) {
 			errText:  "VTM API error 500: internal server error",
 			content:  `{"error_text": "internal server error"}`,
 		},
-		// // 503 (no JSON)
+		// 503 (no JSON)
 		{
 			httpCode:   http.StatusServiceUnavailable,
 			nameSuffix: "no JSON",

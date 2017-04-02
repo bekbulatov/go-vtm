@@ -113,7 +113,6 @@ func newFakeVTMEndpoint(t *testing.T, configs *configContainer) *endpoint {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", authMiddleware(configs.server, func(writer http.ResponseWriter, reader *http.Request) {
 		respKey := fakeResponseMapKey(reader.Method, reader.RequestURI, configs.server.scope)
-		// fmt.Println(respKey)
 		fakeRespIndices.Lock()
 		fakeRespIndex := fakeRespIndices.m[respKey]
 		fakeRespIndices.m[respKey]++

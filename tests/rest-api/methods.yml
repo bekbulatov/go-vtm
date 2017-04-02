@@ -13,6 +13,7 @@
         }
       ]
     }
+
 - uri: /api/tm/3.5/config/active/pools
   method: GET
   content: |
@@ -28,6 +29,7 @@
         }
       ]
     }
+
 - uri: /api/tm/3.5/config/active/pools/test-pool
   method: GET
   content: |
@@ -154,6 +156,11 @@
         }
       }
     }
+
+- uri: /api/tm/3.5/config/active/pools/test-pool
+  method: HEAD
+  content:
+
 - uri: /api/tm/3.5/config/active/pools/test-pool
   method: PUT
   content: |
@@ -280,9 +287,11 @@
         }
       }
     }
+
 - uri: /api/tm/3.5/config/active/pools/test-pool
   method: DELETE
   content:
+
 - uri: /api/tm/3.5/config/active/monitors
   method: GET
   content: |
@@ -298,6 +307,7 @@
         }
       ]
     }
+
 - uri: /api/tm/3.5/config/active/monitors/test-monitor
   method: GET
   content: |
@@ -349,6 +359,11 @@
         }
       }
     }
+
+- uri: /api/tm/3.5/config/active/monitors/test-monitor
+  method: HEAD
+  content:
+
 - uri: /api/tm/3.5/config/active/monitors/test-monitor
   method: PUT
   content: |
@@ -400,6 +415,7 @@
         }
       }
     }
+
 - uri: /api/tm/3.5/config/active/monitors/test-monitor
   method: DELETE
   content:

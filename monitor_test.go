@@ -51,6 +51,39 @@ func TestMonitor(t *testing.T) {
 	assert.False(t, ok)
 }
 
+func TestMonitorExists(t *testing.T) {
+	endpoint := newFakeVTMEndpoint(t, nil)
+	defer endpoint.Close()
+
+	exists, err := endpoint.Client.MonitorExists(fakeMonitorName)
+	assert.NoError(t, err)
+	assert.True(t, exists)
+
+	exists, err = endpoint.Client.MonitorExists("no_such_monitor")
+	assert.Error(t, err)
+	assert.False(t, exists)
+	apiErr, ok := err.(*APIError)
+	assert.True(t, ok)
+	assert.Equal(t, ErrCodeNotFound, apiErr.ErrCode)
+
+	config := NewDefaultConfig()
+	config.URL = "http://non-existing-host.local:9070"
+	// Reduce timeout to speed up test execution time.
+	config.HTTPClient = &http.Client{
+		Timeout: 100 * time.Millisecond,
+	}
+	endpoint = newFakeVTMEndpoint(t, &configContainer{
+		client: &config,
+	})
+	defer endpoint.Close()
+
+	_, err = endpoint.Client.MonitorExists(fakeMonitorName)
+	assert.Error(t, err)
+	assert.False(t, exists)
+	_, ok = err.(*APIError)
+	assert.False(t, ok)
+}
+
 func TestCreateMonitor(t *testing.T) {
 	endpoint := newFakeVTMEndpoint(t, nil)
 	defer endpoint.Close()

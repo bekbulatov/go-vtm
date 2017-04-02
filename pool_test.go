@@ -68,6 +68,39 @@ func TestPool(t *testing.T) {
 	assert.False(t, ok)
 }
 
+func TestPoolExists(t *testing.T) {
+	endpoint := newFakeVTMEndpoint(t, nil)
+	defer endpoint.Close()
+
+	exists, err := endpoint.Client.PoolExists(fakePoolName)
+	assert.NoError(t, err)
+	assert.True(t, exists)
+
+	exists, err = endpoint.Client.PoolExists("no_such_pool")
+	assert.Error(t, err)
+	assert.False(t, exists)
+	apiErr, ok := err.(*APIError)
+	assert.True(t, ok)
+	assert.Equal(t, ErrCodeNotFound, apiErr.ErrCode)
+
+	config := NewDefaultConfig()
+	config.URL = "http://non-existing-host.local:9070"
+	// Reduce timeout to speed up test execution time.
+	config.HTTPClient = &http.Client{
+		Timeout: 100 * time.Millisecond,
+	}
+	endpoint = newFakeVTMEndpoint(t, &configContainer{
+		client: &config,
+	})
+	defer endpoint.Close()
+
+	exists, err = endpoint.Client.PoolExists(fakePoolName)
+	assert.Error(t, err)
+	assert.False(t, exists)
+	_, ok = err.(*APIError)
+	assert.False(t, ok)
+}
+
 func TestCreatePool(t *testing.T) {
 	endpoint := newFakeVTMEndpoint(t, nil)
 	defer endpoint.Close()
