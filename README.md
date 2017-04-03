@@ -1,1 +1,1 @@
-# go-vtm
+# go-vtm [![Build Status](https://travis-ci.org/bekbulatov/go-vtm.svg?branch=master)](https://travis-ci.org/bekbulatov/go-vtm) [![Coverage Status](https://coveralls.io/repos/github/bekbulatov/go-vtm/badge.svg?branch=master)](https://coveralls.io/github/bekbulatov/go-vtm?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/bekbulatov/go-vtm)](https://goreportcard.com/report/github.com/bekbulatov/go-vtm)
