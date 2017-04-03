@@ -32,7 +32,7 @@ type PoolBasic struct {
 	Transparent                   bool        `json:"transparent,omitempty"`
 }
 
-// PoolAutoScaling properties for the "auto_scaling" section
+// PoolAutoScaling contains properties for the "auto_scaling" section
 type PoolAutoScaling struct {
 	AddnodeDelaytime int      `json:"addnode_delaytime,omitempty"`
 	CloudCredentials string   `json:"cloud_credentials,omitempty"`
@@ -58,7 +58,7 @@ type PoolAutoScaling struct {
 	Subnetids        []string `json:"subnetids,omitempty"`
 }
 
-// PoolConnection properties for the "connection" section
+// PoolConnection contains properties for the "connection" section
 type PoolConnection struct {
 	MaxConnectTime        int `json:"max_connect_time,omitempty"`
 	MaxConnectionsPerNode int `json:"max_connections_per_node,omitempty"`
@@ -67,49 +67,49 @@ type PoolConnection struct {
 	QueueTimeout          int `json:"queue_timeout,omitempty"`
 }
 
-// PoolDNSAutoscale properties for the "dns_autoscale" section
+// PoolDNSAutoscale contains properties for the "dns_autoscale" section
 type PoolDNSAutoscale struct {
 	Enabled   bool     `json:"enabled,omitempty"`
 	Hostnames []string `json:"hostnames,omitempty"`
 	Port      int      `json:"port,omitempty"`
 }
 
-// PoolFTP properties for the "ftp" section
+// PoolFTP contains properties for the "ftp" section
 type PoolFTP struct {
 	SupportRFC2428 bool `json:"support_rfc_2428,omitempty"`
 }
 
-// PoolHTTP properties for the "http" section
+// PoolHTTP contains properties for the "http" section
 type PoolHTTP struct {
 	Keepalive              bool `json:"keepalive,omitempty"`
 	KeepaliveNonIdempotent bool `json:"keepalive_non_idempotent,omitempty"`
 }
 
-// PoolKerberosProtocolTransition properties for the "kerberos_protocol_transition" section
+// PoolKerberosProtocolTransition contains properties for the "kerberos_protocol_transition" section
 type PoolKerberosProtocolTransition struct {
 	Principal string `json:"principal,omitempty"`
 	Target    string `json:"target,omitempty"`
 }
 
-// PoolLoadBalancing properties for the "load_balancing" section
+// PoolLoadBalancing contains properties for the "load_balancing" section
 type PoolLoadBalancing struct {
 	Algorithm       string `json:"algorithm,omitempty"`
 	PriorityEnabled bool   `json:"priority_enabled,omitempty"`
 	PriorityNodes   int    `json:"priority_nodes,omitempty"`
 }
 
-// PoolNode properties for the "node" section
+// PoolNode contains properties for the "node" section
 type PoolNode struct {
 	CloseOnDeath  bool `json:"close_on_death,omitempty"`
 	RetryFailTime int  `json:"retry_fail_time,omitempty"`
 }
 
-// PoolSMTP properties for the "smtp" section
+// PoolSMTP contains properties for the "smtp" section
 type PoolSMTP struct {
 	SendStartTLS bool `json:"send_starttls,omitempty"`
 }
 
-// PoolSSL properties for the "ssl" section
+// PoolSSL contains properties for the "ssl" section
 type PoolSSL struct {
 	ClientAuth          bool     `json:"client_auth,omitempty"`
 	CommonNameMatch     []string `json:"common_name_match,omitempty"`
@@ -128,12 +128,12 @@ type PoolSSL struct {
 	StrictVerify        bool     `json:"strict_verify,omitempty"`
 }
 
-// PoolTCP properties for the "tcp" section
+// PoolTCP contains properties for the "tcp" section
 type PoolTCP struct {
 	Nagle bool `json:"nagle,omitempty"`
 }
 
-// PoolUDP properties for the "udp" section
+// PoolUDP contains properties for the "udp" section
 type PoolUDP struct {
 	AcceptFrom     string `json:"accept_from,omitempty"`
 	AcceptFromMask string `json:"accept_from_mask,omitempty"`
