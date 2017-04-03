@@ -1,7 +1,12 @@
 GO := go
 pkgs = $(shell $(GO) list ./... | grep -v /vendor/ | grep -v /examples/)
+deps = $(shell $(GO) list -f '{{range .TestImports}}{{.}} {{end}}' ./...)
 
 all: format build vet test examples
+
+deps:
+	@echo ">> Installing build dependencies"
+	@$(GO) get -d -v ./... $(deps)
 
 format:
 	@echo ">> formatting code"
@@ -28,4 +33,4 @@ lint:
 	@echo ">> linting code"
 	@golint $(pkgs)
 
-.PHONY: all format build vet test examples lint
+.PHONY: all deps format build vet test examples lint
