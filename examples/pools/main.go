@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	vtm "cx/go-vtm"
+	vtm "github.com/bekbulatov/go-vtm"
 )
 
 var (
