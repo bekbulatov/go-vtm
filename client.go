@@ -129,7 +129,7 @@ func (r *vtmClient) apiCall(method, url string, body, result interface{}) error 
 		r.debugLog.Printf("apiCall(): %v %v returned %v %s\n", request.Method, request.URL.String(), response.Status, oneLogLine(respBody))
 	}
 
-	// step: check for a successfull response
+	// step: check for a successful response
 	if response.StatusCode >= 200 && response.StatusCode <= 299 {
 		if result != nil {
 			if err := json.Unmarshal(respBody, result); err != nil {
