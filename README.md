@@ -18,7 +18,7 @@ There is an examples directory in the source which contains some code of how to 
     client := vtm.NewClient(config)
 
     pools, err := client.ListPools()
-    if err != nil {
+    if err == nil {
       log.Printf("Found %d pools", len(pools))
     }
 
@@ -29,6 +29,6 @@ There is an examples directory in the source which contains some code of how to 
     pool := vtm.NewPool()
     pool.AddNode(vtm.NodeItem{Node: "foo.bar.com:123", Weight: 1})
     _, err = client.CreatePool(poolName, pool)
-    if err != nil {
+    if err == nil {
       log.Printf("Successfully created the pool: %s", poolName)
     }
