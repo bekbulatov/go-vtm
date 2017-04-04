@@ -1,8 +1,13 @@
 language: go
+sudo: false
 go:
   - 1.5
   - 1.6
   - 1.7
   - 1.8
+before_install:
+  - go get github.com/mattn/goveralls
 install:
   - make deps test examples
+script:
+  - $HOME/gopath/bin/goveralls -service=travis-ci -package github.com/bekbulatov/go-vtm
