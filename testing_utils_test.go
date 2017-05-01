@@ -129,7 +129,7 @@ func newFakeVTMEndpoint(t *testing.T, configs *configContainer) *endpoint {
 			}
 		}
 
-		http.Error(writer, `{"message": "not found"}`, 404)
+		http.Error(writer, `{error_id": "resource.not_found"}`, 404)
 	}))
 
 	// step: create HTTP test server

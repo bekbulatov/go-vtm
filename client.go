@@ -52,7 +52,7 @@ type vtmClient struct {
 	debugLog *log.Logger
 }
 
-// NewClient creates a new vtmclient
+// NewClient creates a new vtm client
 //		config:			the configuration to use
 func NewClient(config Config) VTM {
 	// if no http client, set to default
